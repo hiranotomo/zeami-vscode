@@ -1,0 +1,155 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.15.1'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run compile
+
+      - name: Build macOS app
+        run: ./build-scripts/build-macos.sh
+
+      - name: Code sign app (if certificate available)
+        if: env.MACOS_CERTIFICATE_NAME != ''
+        env:
+          CODESIGN_IDENTITY: ${{ secrets.MACOS_CERTIFICATE_NAME }}
+        run: ./build-scripts/sign-app.sh
+
+      - name: Create DMG installer
+        run: ./build-scripts/create-dmg.sh
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeami-vscode-macos-dmg
+          path: build-output/*.dmg
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.15.1'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run compile
+
+      - name: Build Windows installer
+        run: |
+          echo "Windows build not yet implemented"
+          # TODO: Add Windows build script
+
+      - name: Upload Windows artifact
+        if: false # Enable when Windows build is implemented
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeami-vscode-windows-installer
+          path: build-output/*.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.15.1'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libxkbfile-dev libsecret-1-dev
+          npm ci
+
+      - name: Build TypeScript
+        run: npm run compile
+
+      - name: Build Linux packages
+        run: |
+          echo "Linux build not yet implemented"
+          # TODO: Add Linux build script
+
+      - name: Upload Linux artifacts
+        if: false # Enable when Linux build is implemented
+        uses: actions/upload-artifact@v4
+        with:
+          name: zeami-vscode-linux-packages
+          path: |
+            build-output/*.deb
+            build-output/*.rpm
+            build-output/*.AppImage
+
+  create-release:
+    needs: [build-macos]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "zeami-vscode-macos-dmg/*.dmg"
+          draft: true
+          generateReleaseNotes: true
+          body: |
+            # Zeami VS Code Release
+
+            ## What's New
+            - See generated release notes below
+
+            ## Installation
+
+            ### macOS
+            1. Download the `.dmg` file
+            2. Open the DMG and drag Zeami VS Code to Applications
+            3. First time opening: Right-click and select "Open" to bypass Gatekeeper
+
+            ### Windows & Linux
+            Coming soon!
+
+            ## Requirements
+            - macOS 11.0 or later
+            - Node.js 22.15.1 or later (for development)
