@@ -1,0 +1,47 @@
+{
+	"builtInExtensions": [
+		{
+			"name": "ZEAMi Japanese Language Pack",
+			"path": "./extensions-extra/vscode-language-pack-ja",
+			"description": "日本語言語パック for ZEAMi CODE"
+		},
+		{
+			"name": "Python",
+			"path": "./extensions-extra/vscode-python",
+			"publisher": "ms-python",
+			"description": "Python言語サポート、IntelliSense、デバッグ機能"
+		},
+		{
+			"name": "ESLint",
+			"path": "./extensions-extra/vscode-eslint",
+			"publisher": "dbaeumer",
+			"description": "JavaScript/TypeScriptの静的解析ツール"
+		},
+		{
+			"name": "Prettier",
+			"path": "./extensions-extra/prettier-vscode",
+			"publisher": "esbenp",
+			"description": "コード自動フォーマッター"
+		},
+		{
+			"name": "GitLens",
+			"path": "./extensions-extra/vscode-gitlens",
+			"publisher": "eamodio",
+			"description": "Git統合の強化、コードの作成者表示"
+		},
+		{
+			"name": "Python Debugger",
+			"path": "./extensions-extra/vscode-python-debugger",
+			"publisher": "ms-python",
+			"description": "Python専用デバッガー"
+		}
+	],
+	"defaultSettings": {
+		"locale": "ja",
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"python.defaultInterpreterPath": "python3",
+		"eslint.enable": true,
+		"gitlens.showWelcomeOnInstall": false
+	}
+}

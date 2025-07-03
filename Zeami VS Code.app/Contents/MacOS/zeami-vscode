@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Zeami VS Code App Launcher
+# macOSアプリケーションバンドルから起動するためのスクリプト
+
+# アプリケーションバンドルのパスを取得
+APP_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd ../.. && pwd )"
+VSCODE_PATH="$( cd "$APP_PATH/../.." && pwd )"
+
+# VS Codeの起動
+cd "$VSCODE_PATH"
+exec ./scripts/code.sh "$@"

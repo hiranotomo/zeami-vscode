@@ -21,3 +21,10 @@ vscode.db
 product.overrides.json
 *.snap.actual
 .vscode-test
+
+# Extensions (git submodules)
+extensions-extra/prettier-vscode/
+extensions-extra/vscode-eslint/
+extensions-extra/vscode-gitlens/
+extensions-extra/vscode-python/
+extensions-extra/vscode-python-debugger/
